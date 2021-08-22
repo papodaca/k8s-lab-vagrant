@@ -30,14 +30,15 @@ def default_config(machine)
   provision machine
 end
 
-def provision(machine)
-  machine.vm.provision "shell", path: "default_provision.sh"
+def provision(machine, script: "default_provision.sh")
+  machine.vm.provision "shell", path: script
 end
 
 Vagrant.configure("2") do |config|
   config.vm.define :master do |master|
     default_config master
     master.vm.hostname = "k8s-master"
+    provision master, script: "master_provision.sh"
   end
 
   [1, 2].each do |n|

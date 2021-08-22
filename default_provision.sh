@@ -2,12 +2,16 @@
 
 # systemd-resolved causes hostnames to randomly return SERVFAIL, we don't need it in anycase.
 # Not sure why its enabled by default
-sudo systemctl stop systemd-resolved
-sudo systemctl disable systemd-resolved
+sudo systemctl disable --now systemd-resolved
 sudo ln -sf /run/systemd/resolve/resolv.conf /etc/resolv.conf
+# sudo rm -rf /etc/resolv.conf
+# echo "nameserver 192.168.1.1" | sudo tee /etc/resolv.conf
 
 export DEBIAN_FRONTEND=noninteractive
 export DEBCONF_NONINTERACTIVE_SEEN=true
+
+systemctl disable --now snapd
+sudo apt-get purge -y snapd
 
 sudo apt-get update
 sudo apt-get install -y apt-transport-https ca-certificates curl gnupg lsb-release
@@ -50,4 +54,5 @@ sudo systemctl restart containerd
 sudo swapoff -a
 sudo sed -i '/ swap / s/^\(.*\)$/#\1/g' /etc/fstab
 
+# kubeadm config images pull --kubernetes-version $k8s_version --image-repository <insert_local_repo>
 kubeadm config images pull --kubernetes-version $k8s_version
